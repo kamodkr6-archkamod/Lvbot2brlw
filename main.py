@@ -1539,19 +1539,13 @@ async def functional_lone_wolf(addrs, starter_packet, account_region, client_ver
                 last_start_time = 0.0
 
                 def get_effective_mode():
-                    # BR is the default through Level 10. Above Level 10,
-                    # automatically use Lone Wolf; below that, respect dashboard mode.
+                    # 🔥 Level 1-3 → BR | Level 4+ → LW (auto switch)
                     try:
                         level_now = int(bot_state.get_account_level(uid_str) or 0)
                     except (TypeError, ValueError):
                         level_now = 0
-                    try:
-                        dashboard_mode = str(bot_state.get_account_mode(uid_str) or "BR").upper().strip()
-                    except Exception:
-                        dashboard_mode = "BR"
-                    if level_now > 10:
-                        return "LW", level_now
-                    if dashboard_mode in {"LW", "LONEWOLF", "LONE-WOLF", "LONE_WOLF"}:
+
+                    if level_now >= 4:
                         return "LW", level_now
                     return "BR", level_now
 
@@ -1609,9 +1603,6 @@ async def functional_lone_wolf(addrs, starter_packet, account_region, client_ver
                         else START_MATCH_INTERVAL
                     )
                     if now - last_start_time >= match_search_interval:
-                        # Never let long-running UDP matches accumulate. The old
-                        # loop could create a new background task every 3s even
-                        # when previous matches were still alive.
                         if len(play_matches) < MAX_CONCURRENT_MATCHES:
                             await send_start_match()
                         else:
