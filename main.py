@@ -1545,7 +1545,7 @@ async def functional_lone_wolf(addrs, starter_packet, account_region, client_ver
                     except (TypeError, ValueError):
                         level_now = 0
 
-                    if level_now >= 4:
+                    if level_now >= 3:
                         return "LW", level_now
                     return "BR", level_now
 
